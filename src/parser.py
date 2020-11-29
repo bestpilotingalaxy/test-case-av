@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 # Create the celery app and get the logger
 app = Celery('tasks', broker='pyamqp://guest@rabbit//')
 logger = get_task_logger(__name__)
+
 # key for requests to avito api
 key = 'af0deccbgcgidddjgnvljitntccdduijhdinfgjgfjir'
 
@@ -27,13 +28,12 @@ def get_location_id(location):
 
 
 @app.task
-def parse_count(keyword, location):
+def parse_count(keyword, location_id):
     """
     """
-    logger.info(f"Started parsing {keyword} + {location}")
+    logger.info(f"Started parsing {keyword} + {location_id}")
     url = f'https://m.avito.ru/api/9/items?key={key}&locationId={location_id}&query={keyword}'
     response = requests.get(url)
     content = json.loads(response.content)
     count = content['result']['totalCount']
     return count
-    
