@@ -15,7 +15,9 @@ services:
 
   worker:
     build: .
-    entrypoint: celery -A src.parser worker -c 2 --loglevel=info
+    command: >
+      bash -c "celery -A src.tasks beat --loglevel=info
+      && celery -A src.tasks worker -c 2 --loglevel=info"
     depends_on:
       - rabbit
 

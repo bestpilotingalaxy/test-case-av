@@ -2,25 +2,29 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from celery import uuid
 
-from .parser import get_location_id, parse_count
-from .db.models import AddRequestBody, Pair
-from .db.actions import database as mongo
+from .parser import get_location_id
+from .db.models import AddRequestBody, StatRequestBody, Pair
+from .db.actions import pairs_collection, get_stats
+from .tasks import add_new_pair
 
 app = FastAPI()
 
 
 @app.post("/add")
-def parse(item: AddRequestBody):
-    try:
-        location_id = get_location_id(item.location)
-    except ValueError:
+async def add(body: AddRequestBody):
+# Добавить проверку на наличие пары !!!
+    location_id = await get_location_id(body.location)
+    if location_id is None:
         raise HTTPException(status_code=400,
                             detail="Invalid region name.")
     pair_id = uuid()
-    mongo.pairs.insert({
-        '_id': pair_id,
-        'keyword': item.keyword,
-        'location_id': location_id
-    })
-    parse_count.delay(item.keyword, location_id)
-    return {"pair_id": pair_id}
+    add_new_pair.delay(pair_id, body.keyword, body.location, location_id)
+    # TODO: return ObjectId from inserted pair
+    return {'Added new pair! pair_id:': pair_id}
+
+
+@app.post("/stat")
+async def stat(body: StatRequestBody):
+# Обработать некорретные запросы
+    stats = await get_stats(body.pair_id, body.start, body.end)
+    return stats
