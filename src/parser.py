@@ -21,7 +21,7 @@ async def get_location_id(location):
         return None
 
 
-async def parse_count(pair_id, keyword, location_id):
+def parse_count(pair_id, keyword, location_id):
     """
     """
     url = f'https://m.avito.ru/api/9/items?key={key}&locationId={location_id}&query={keyword}'

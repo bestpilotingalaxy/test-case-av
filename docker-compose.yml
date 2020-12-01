@@ -13,11 +13,15 @@ services:
     depends_on:
       - mongo
 
-  worker:
+  celeryworker:
     build: .
-    command: >
-      bash -c "celery -A src.tasks beat --loglevel=info
-      && celery -A src.tasks worker -c 2 --loglevel=info"
+    entrypoint: celery -A src.tasks worker -c 2 --loglevel=info
+    depends_on:
+      - rabbit
+
+  celerybeat:
+    build: .
+    entrypoint: celery -A src.tasks beat --loglevel=info
     depends_on:
       - rabbit
 

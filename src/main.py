@@ -17,9 +17,9 @@ async def add(body: AddRequestBody):
     if location_id is None:
         raise HTTPException(status_code=400,
                             detail="Invalid region name.")
+    # сделать uuid уникальным для пары ключ+значение
     pair_id = uuid()
     add_new_pair.delay(pair_id, body.keyword, body.location, location_id)
-    # TODO: return ObjectId from inserted pair
     return {'Added new pair! pair_id:': pair_id}
 
 
@@ -27,4 +27,4 @@ async def add(body: AddRequestBody):
 async def stat(body: StatRequestBody):
 # Обработать некорретные запросы
     stats = await get_stats(body.pair_id, body.start, body.end)
-    return stats
+    return {'stats': stats}
