@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from asgiref.sync import async_to_sync
 from celery import Celery
 from celery.utils.log import get_task_logger
 from celery.schedules import crontab
@@ -21,36 +22,19 @@ def setup_periodic_tasks(sender, **kwargs):
         name='Stats update'
     )
 
-
 @app.task
 def collect_pairs_stats():
     """
     """
-    pairs = get_all_pairs()
+    pairs = async_to_sync(get_all_pairs())
     for pair in pairs:
-        stat = parse_count(
+        update_pair_stat.delay(
             pair['pair_id'], pair['keyword'], pair['location_id']
         )
-        stats_collection.insert_one(stat)
-
 
 @app.task
-def add_new_pair(pair_id, keyword, location, location_id):
+def update_pair_stat(pair_id, keyword, location, location_id):
     """
     """
-    pairs_collection.insert_one({
-        '_id': pair_id,
-        'keyword': keyword,
-        'location': location,
-        'location_id': location_id
-    })
-
     stat = parse_count(pair_id, keyword, location_id)
-
-    stats_collection.insert_one(stat
-    # {
-    #     'pair_id': pair_id,
-    #     'count': stat,
-    #     'timestamp': datetime.now().isoformat()
-    # }
-    )
+    async_to_sync(stats_collection.insert_one(stat))

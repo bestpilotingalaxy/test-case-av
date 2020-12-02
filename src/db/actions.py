@@ -28,3 +28,13 @@ async def get_stats(pair_id, start, end):
                      "$lt": datetime.isoformat(end)}}):
         stats.append({'count': stat['count'], 'timestamp': stat['timestamp']})
     return stats
+
+
+async def add_new_pair(keyword, location, location_id):
+    pair_data = {
+        "keyword": keyword,
+        "location": location,
+        "location_id": location_id
+    }
+    pair = await pairs_collection.insert_one(pair_data)
+    return pair.inserted_id
