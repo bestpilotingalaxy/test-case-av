@@ -21,16 +21,11 @@ async def get_location_id(location):
         return None
 
 
-def parse_count(pair_id, keyword, location_id):
+async def parse_count(pair_id, keyword, location_id):
     """
     """
     url = f'https://m.avito.ru/api/9/items?key={key}&locationId={location_id}&query={keyword}'
     response = requests.get(url)
     content = json.loads(response.content)
     count = content['result']['totalCount']
-    stat = {
-        'pair_id': pair_id,
-        'count': count,
-        'timestamp': datetime.now().isoformat()
-    }
-    return stat
+    return count

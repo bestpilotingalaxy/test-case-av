@@ -2,8 +2,10 @@ version: "3.8"
 
 services:
 
-  rabbit:
-    image: rabbitmq:latest
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
 
   fastapi:
     build: .
@@ -13,18 +15,12 @@ services:
     depends_on:
       - mongo
 
-  celeryworker:
+  worker:
     build: .
-    entrypoint: celery -A src.tasks worker -c 2 --loglevel=info
+    entrypoint: arq src.worker.WorkerSettings
     depends_on:
-      - rabbit
-
-  celerybeat:
-    build: .
-    entrypoint: celery -A src.tasks beat --loglevel=info
-    depends_on:
-      - rabbit
-
+      - redis
+      
   mongo:
     image: mongo:latest
     restart: always

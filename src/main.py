@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from celery import uuid
+from arq.connections import ArqRedis, create_pool
 
 from .parser import get_location_id
 from .db.models import AddRequestBody, StatRequestBody, Pair
 from .db.actions import pairs_collection, get_stats, add_new_pair
-from .tasks import update_pair_stat
+from .worker import settings as redis_settings
 
 app = FastAPI()
 
@@ -19,8 +19,14 @@ async def add(body: AddRequestBody):
                             detail="Invalid region name.")
     # сделать uuid уникальным для пары ключ+значение
     pair_id = await add_new_pair(body.keyword, body.location, location_id)
-    update_pair_stat.delay(pair_id, body.keyword, body.location, location_id)
-    return {'Added new pair! pair_id:': str(pair_id)}
+    redis: ArqRedis = await create_pool(settings_=redis_settings)
+    await redis.enqueue_job(
+        'add_pair_stat',
+        pair_id,
+        body.keyword,
+        location_id
+    )
+    return {'pair_id': pair_id}
 
 
 @app.post("/stat")

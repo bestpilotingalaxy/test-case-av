@@ -37,4 +37,4 @@ async def add_new_pair(keyword, location, location_id):
         "location_id": location_id
     }
     pair = await pairs_collection.insert_one(pair_data)
-    return pair.inserted_id
+    return str(pair.inserted_id)
