@@ -1,14 +1,12 @@
 from arq import cron
-from arq.connections import RedisSettings
 
-from .tasks import add_pair_stat, update_all_stats
-
-settings = RedisSettings(host='redis', port=6379)
+from .tasks import add_pair_stat, update_all_stats, redis_settings
 
 class WorkerSettings:
     """
     Settings for the ARQ worker.
     """
-    redis_settings = settings
+    redis_settings = redis_settings
     functions = [add_pair_stat]
-    cron_jobs = [cron(update_all_stats, minute='*/1')]
+    # TODO: поменять расписание на 1 раз в час
+    cron_jobs = [cron(update_all_stats, minute={i for i in range(60)})]
