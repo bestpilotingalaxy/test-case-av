@@ -17,7 +17,7 @@ services:
 
   worker:
     build: .
-    entrypoint: arq src.worker.WorkerSettings
+    entrypoint: arq src.tasks.worker.WorkerSettings
     depends_on:
       - redis
       

@@ -1,12 +1,10 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI
 from arq.connections import ArqRedis, create_pool
 
-from .parser import get_location_id
-from .db.models import AddRequestBody, StatRequestBody, Pair
-from .db.actions import pairs_collection, get_stats, add_new_pair
-from .tasks import redis_settings
-from .validation import add_req_validator, stat_req_validator
+from .db.models import AddRequestBody, StatRequestBody
+from .db.actions import get_stats, add_new_pair
+from .config import REDIS_SETTINGS
+from .routes.validation import add_req_validator, stat_req_validator
 
 
 app = FastAPI()
@@ -19,7 +17,7 @@ async def add(body: AddRequestBody):
     """
     location_id = await add_req_validator(body)
     pair_id = await add_new_pair(body.keyword, body.location, location_id)
-    redis: ArqRedis = await create_pool(settings_=redis_settings)
+    redis: ArqRedis = await create_pool(settings_=REDIS_SETTINGS)
     await redis.enqueue_job(
         'add_pair_stat', pair_id, body.keyword, location_id
     )

@@ -1,12 +1,10 @@
 from datetime import datetime
 
-from arq.connections import ArqRedis, create_pool, RedisSettings
+from arq.connections import ArqRedis, create_pool
 
-from .db.actions import get_all_pairs, stats_collection, pairs_collection
-from .parser import parse_count
-
-# redis settings object
-redis_settings = RedisSettings(host='redis', port=6379)
+from ..db.actions import get_all_pairs, stats_collection
+from ..parsing.parser import parse_count
+from ..config import REDIS_SETTINGS
 
 
 async def add_pair_stat(ctx: dict, pair_id, keyword, location_id):
@@ -28,7 +26,7 @@ async def update_all_stats(ctx: dict):
     Enqueue add_pair_stat() task for every pair in DB.
     """
     all_pairs = await get_all_pairs()
-    redis: ArqRedis = await create_pool(settings_=redis_settings)
+    redis: ArqRedis = await create_pool(settings_=REDIS_SETTINGS)
     for pair in all_pairs:
         await redis.enqueue_job(
             'add_pair_stat',

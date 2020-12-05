@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from .db.actions import pairs_collection
-from .parser import get_location_id
+from ..db.actions import pairs_collection
+from ..parsing.parser import get_location_id
 
 
 async def add_req_validator(body: object):

@@ -1,13 +1,9 @@
 from datetime import datetime
 
-import motor.motor_asyncio
-
-# connection instance
-MONGO_DETAILS = "mongodb://mongo:27017"
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
+from ..config import mongo_client
 
 # database instance
-database = client.avito
+database = mongo_client.avito
 
 # async collections shortcuts
 pairs_collection = database.get_collection("pairs")
