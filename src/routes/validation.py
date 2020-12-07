@@ -31,7 +31,7 @@ async def stat_req_validator(body: object):
         # check 'pair_id' string is ObjectId supported format
         pair_id = ObjectId(body.pair_id)
     except InvalidId:
-        raise HTTPException(status_code=400, detail="Invalid pair_id string.")
+        raise HTTPException(status_code=400, detail="Invalid pair_id format.")
     # check if such pair exist
     pair = await pairs_collection.find_one({"_id": pair_id})
     if pair is None:
