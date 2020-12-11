@@ -3,7 +3,7 @@ from datetime import datetime
 from arq.connections import ArqRedis, create_pool
 
 from ..db.actions import get_all_pairs, stats_collection
-from ..parsing.parser import parse_count
+from ..parsing.parsing import parse_count
 from ..config import redis_settings
 
 
@@ -15,7 +15,7 @@ async def add_pair_stat(ctx: dict, pair_id, keyword, location_id):
     stat = {
         'pair_id': pair_id,
         'count': count,
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.now().isoformat()
     }
     await stats_collection.insert_one(stat)
 

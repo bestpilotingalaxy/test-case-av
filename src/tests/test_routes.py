@@ -50,7 +50,6 @@ def test_add_already_existing_pair(test_app):
         "/add", json={"keyword": "Стекловата", "location": "Москва"}
     )
     assert response.status_code == 400
-    assert response.json() == {"detail": "Pair already exist."}
     
 
 def test_add_pair_invalid_location(test_app):
