@@ -3,16 +3,23 @@ Test case for avito MI unit:
 https://github.com/avito-tech/mi-backend-trainee-assignment
 
 
-# Installation and launch:
-       $ git clone https://github.com/bestpilotingalaxy/test-case-av.git
-                    
+## Installation and launch:
+            
+-       $ git clone https://github.com/bestpilotingalaxy/test-case-av.git
+                         
        
-       $ docker-compose up -d --build
+-       $ cd test-case-av
+             
+       
+-       $ docker-compose up -d --build
 
-Run tests
+Default: ARQ stats collecting sheduler set to run every 2 minutes.
+Get a look on #TODO to set another time interval.
 
-      $ docker-compose exec fastapi pytest . 
+## Run tests
+
+-      $ docker-compose exec fastapi pytest . 
       
-# Docs
+## Docs
 
 http://localhost:8000/docs
