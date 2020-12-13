@@ -11,4 +11,4 @@ class WorkerSettings:
     redis_settings = redis_settings
     functions = [add_pair_stat]
     # TODO: поменять расписание на 1 раз в час
-    cron_jobs = [cron(update_all_stats, minute={i for i in range(60)})]
+    cron_jobs = [cron(update_all_stats, minute={i for i in range(0, 60, 2)})]
